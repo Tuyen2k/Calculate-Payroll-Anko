@@ -29,6 +29,9 @@
             padding: 5px;
             box-sizing: border-box;
         }
+        .month-input {
+            width: 100px;
+        }
         .readonly {
             background-color: #f8f9fa;
             border: none;
@@ -36,6 +39,16 @@
         .total-highlight {
             background-color: #e8f5e9;
             font-weight: bold;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
         }
     </style>
 </head>
@@ -47,35 +60,75 @@
             </tr>
             <tr>
                 <td>1. Tháng</td>
-                <td><input type="month" id="month"></td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" id="month" class="month-input" placeholder="MM/YYYY" pattern="\d{2}/\d{4}" onchange="calculate()">
+                        <div class="note">Nhập theo định dạng: MM/YYYY (Ví dụ: 10/2024)</div>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td>2. Lương cơ bản</td>
-                <td><input type="number" id="baseSalary" onchange="calculate()"></td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="baseSalary" min="0" max="1000000000" onchange="calculate()">
+                        <div class="note">Nhập số tiền lương cơ bản của bạn</div>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td>3. Ngày công thực tế</td>
-                <td><input type="number" id="workDays" onchange="calculate()"></td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="workDays" onchange="calculate()" min="0" max="31">
+                        <div class="note">Nhập số ngày công thực tế của bạn trong tháng (giả sử công chuẩn là 26 công)</div>
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>4. % thực đạt doanh số</td>
-                <td><input type="number" id="revenueAchievement" onchange="calculate()"></td>
+                <td>4. Doanh số</td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="revenue" min="0" max="1000000000" onchange="calculateAchievement()">
+                        <div class="note">Ví dụ: Nếu doanh số của bạn là 80 triệu, hãy nhập: 80000000</div>
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>5. Doanh số thực đạt</td>
-                <td><input type="number" id="revenue" onchange="calculate()"></td>
+                <td>5. % thực đạt chỉ tiêu</td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="revenueAchievement" min="0" max="100" onchange="calculate()">
+                        <div class="note">Ví dụ: Nếu bạn đạt 60%, hãy nhập số 60</div>
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>6. Số đơn hàng/tháng</td>
-                <td><input type="number" id="orders" onchange="calculate()"></td>
+                <td>6. % thực đạt KPI</td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="kpi" onchange="calculate()" min="0" max="100">
+                        <div class="note">Ví dụ: Nếu bạn đạt 60%, hãy nhập số 60</div>
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>7. % thực đạt KPI</td>
-                <td><input type="number" id="kpi" onchange="calculate()"></td>
+                <td>7. Số đơn hàng/tháng</td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="orders" onchange="calculate()" min="0" max="100000000">
+                        <div class="note">Điền số đơn hàng trong tháng bạn bán được</div>
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>8. Thưởng quý (2 mốc &gt;=105% hoặc 115%)</td>
-                <td><input type="number" id="quarterlyTarget" onchange="calculate()"></td>
+                <td>8. Thưởng quý</td>
+                <td>
+                    <div class="input-group">
+                        <input type="number" id="quarterlyTarget" min="0" max="100000000" onchange="calculate()">
+                        <div class="note">Bạn sẽ đạt thưởng quý nếu tổng chỉ tiêu 3 tháng đạt &gt;=105% hoặc 115%</div>
+                    </div>
+                </td>
             </tr>
 
             <tr class="header">
@@ -117,12 +170,40 @@
     </div>
 
     <script>
+        document.getElementById('month').addEventListener('input', function(e) {
+            let value = e.target.value;
+            
+            value = value.replace(/[^\d/]/g, '');
+            
+            if (value.length === 2 && !value.includes('/')) {
+                value += '/';
+            }
+            
+            let month = parseInt(value.split('/')[0]);
+            if (month > 12) {
+                value = '12' + value.substr(2);
+            }
+            
+            if (value.length > 7) {
+                value = value.substr(0, 7);
+            }
+            
+            e.target.value = value;
+        });
+
+        function calculateAchievement() {
+            const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+            const target = 62500000;
+            const achievement = (revenue / target) * 100;
+            document.getElementById('revenueAchievement').value = achievement.toFixed(2);
+            calculate();
+        }
+
         function formatCurrency(number) {
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
         }
 
         function calculate() {
-            // Lấy giá trị input
             const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
             const workDays = parseFloat(document.getElementById('workDays').value) || 0;
             const revenueAchievement = parseFloat(document.getElementById('revenueAchievement').value) || 0;
@@ -131,7 +212,6 @@
             const kpi = parseFloat(document.getElementById('kpi').value) || 0;
             const quarterlyTarget = parseFloat(document.getElementById('quarterlyTarget').value) || 0;
 
-            // 1. Tính ngày công tính lương
             let salaryDays;
             if (revenueAchievement >= 100) {
                 salaryDays = workDays;
@@ -141,13 +221,9 @@
                 salaryDays = workDays;
             }
 
-            // 2. Lương thực nhận
             const actualSalary = (baseSalary / 26) * salaryDays;
-
-            // 3. Phụ cấp lạm phát
             const inflationAllowance = revenue >= 50000000 ? Math.round((500000 / 26) * salaryDays) : 0;
-
-            // 4. Phụ cấp internet
+            
             let internetAllowance;
             if (orders >= 75) {
                 internetAllowance = (200000 / 26) * workDays;
@@ -155,7 +231,6 @@
                 internetAllowance = (orders * 200000) / 75;
             }
 
-            // 5. Thưởng doanh số
             let revenueBonus = 0;
             if (revenueAchievement >= 115) {
                 revenueBonus = revenue * 0.052;
@@ -181,22 +256,19 @@
                 }
             }
 
-            // 6. Thưởng KPI
             let kpiBonus = 0;
-            if (kpi > 115) {
+            if (kpi >= 115) {
                 kpiBonus = 585000;
-            } else if (kpi > 105) {
+            } else if (kpi >= 105) {
                 kpiBonus = 495000;
-            } else if (kpi > 95) {
+            } else if (kpi >= 95) {
                 kpiBonus = 405000;
-            } else if (kpi > 85) {
+            } else if (kpi >= 85) {
                 kpiBonus = 337500;
             }
 
-            // 7. Tổng thu nhập
             const totalIncome = actualSalary + inflationAllowance + internetAllowance + revenueBonus + kpiBonus;
 
-            // 8. Thưởng quý
             let quarterlyBonus = 0;
             if (quarterlyTarget >= 115) {
                 quarterlyBonus = 1950000;
@@ -204,7 +276,6 @@
                 quarterlyBonus = 1650000;
             }
 
-            // Hiển thị kết quả
             document.getElementById('salaryDays').value = salaryDays.toFixed(2);
             document.getElementById('actualSalary').value = formatCurrency(actualSalary);
             document.getElementById('inflationAllowance').value = formatCurrency(inflationAllowance);
@@ -214,9 +285,6 @@
             document.getElementById('totalIncome').value = formatCurrency(totalIncome);
             document.getElementById('quarterlyBonus').value = formatCurrency(quarterlyBonus);
         }
-
-        // Thêm sự kiện calculate cho trường month
-        document.getElementById('month').addEventListener('change', calculate);
     </script>
 
 
