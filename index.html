@@ -71,7 +71,7 @@
                 <td>2. Lương cơ bản</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" id="baseSalary" min="0" max="1000000000" onchange="calculate()">
+                        <input type="number" id="baseSalary" min="0" onchange="calculate()">
                         <div class="note">Nhập số tiền lương cơ bản của bạn</div>
                     </div>
                 </td>
@@ -89,7 +89,7 @@
                 <td>4. Doanh số</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" id="revenue" min="0" max="1000000000" onchange="calculateAchievement()">
+                        <input type="number" id="revenue" min="0" onchange="calculateAchievement()">
                         <div class="note">Ví dụ: Nếu doanh số của bạn là 80 triệu, hãy nhập: 80000000</div>
                     </div>
                 </td>
@@ -98,7 +98,7 @@
                 <td>5. % thực đạt chỉ tiêu</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" id="revenueAchievement" min="0" max="100" onchange="calculate()">
+                        <input type="number" id="revenueAchievement" min="0" onchange="calculate()">
                         <div class="note">Ví dụ: Nếu bạn đạt 60%, hãy nhập số 60</div>
                     </div>
                 </td>
@@ -107,7 +107,7 @@
                 <td>6. % thực đạt KPI</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" id="kpi" onchange="calculate()" min="0" max="100">
+                        <input type="number" id="kpi" onchange="calculate()" min="0">
                         <div class="note">Ví dụ: Nếu bạn đạt 60%, hãy nhập số 60</div>
                     </div>
                 </td>
@@ -116,7 +116,7 @@
                 <td>7. Số đơn hàng/tháng</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" id="orders" onchange="calculate()" min="0" max="100000000">
+                        <input type="number" id="orders" onchange="calculate()" min="0" >
                         <div class="note">Điền số đơn hàng trong tháng bạn bán được</div>
                     </div>
                 </td>
@@ -125,7 +125,7 @@
                 <td>8. Thưởng quý</td>
                 <td>
                     <div class="input-group">
-                        <input type="number" id="quarterlyTarget" min="0" max="100000000" onchange="calculate()">
+                        <input type="number" id="quarterlyTarget" min="0" onchange="calculate()">
                         <div class="note">Bạn sẽ đạt thưởng quý nếu tổng chỉ tiêu 3 tháng đạt &gt;=105% hoặc 115%</div>
                     </div>
                 </td>
