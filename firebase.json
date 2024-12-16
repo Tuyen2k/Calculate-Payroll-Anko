@@ -2,6 +2,10 @@
   "hosting": {
     "site": "anko-vn",
     "public": "public",
+    "rewrites": [
+      { "source": "/ss", "destination": "/ss/index.html" },
+      { "source": "/sr", "destination": "/sr/index.html" }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

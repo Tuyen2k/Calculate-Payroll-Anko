@@ -2,6 +2,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng Tính Thu Nhập</title>
+    <link rel="icon" href="https://ankovietnam.com/wp-content/uploads/2022/10/fa-50x50.png" size="32x32" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,6 +24,7 @@
         .header {
             background-color: #fff3cd;
             font-weight: bold;
+            text-transform: uppercase;
         }
         input {
             width: 100%;
@@ -39,6 +41,7 @@
         .total-highlight {
             background-color: #e8f5e9;
             font-weight: bold;
+            text-transform: uppercase;
         }
         .note {
             font-size: 0.9em;
@@ -50,10 +53,15 @@
             display: flex;
             flex-direction: column;
         }
+
+        .title{
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <h3 class="title">BẢNG TÍNH THU NHẬP DỰ KIẾN</h3>
         <table>
             <tbody><tr class="header">
                 <td colspan="2">Vui lòng nhập các thông tin dưới đây</td>
@@ -81,7 +89,7 @@
                 <td>
                     <div class="input-group">
                         <input type="number" id="workDays" onchange="calculate()" min="0" max="31">
-                        <div class="note">Nhập số ngày công thực tế của bạn trong tháng (giả sử công chuẩn là 26 công)</div>
+                        <div class="note">Nhập số ngày công thực tế của bạn trong tháng</div>
                     </div>
                 </td>
             </tr>
@@ -159,10 +167,19 @@
                 <td><input type="text" id="kpiBonus" class="readonly" readonly=""></td>
             </tr>
             <tr class="total-highlight">
-                <td>7. Tổng thu nhập</td>
+                <td>Tổng thu nhập tháng</td>
                 <td><input type="text" id="totalIncome" class="readonly" readonly=""></td>
             </tr>
-            <tr>
+            <tr class="total-highlight">
+                <td>7. Thực nhận</td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" id="receipt" class="readonly" readonly="">
+                        <div class="note" style="text-transform: none;">Trừ Công đoàn (10.000₫) và BHXH (433.671₫)</div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="total-highlight">
                 <td>8. Thưởng quý</td>
                 <td><input type="text" id="quarterlyBonus" class="readonly" readonly=""></td>
             </tr>
@@ -276,6 +293,8 @@
                 quarterlyBonus = 1650000;
             }
 
+            let receipt = totalIncome - (10000 + 433671)
+
             document.getElementById('salaryDays').value = salaryDays.toFixed(2);
             document.getElementById('actualSalary').value = formatCurrency(actualSalary);
             document.getElementById('inflationAllowance').value = formatCurrency(inflationAllowance);
@@ -284,6 +303,7 @@
             document.getElementById('kpiBonus').value = formatCurrency(kpiBonus);
             document.getElementById('totalIncome').value = formatCurrency(totalIncome);
             document.getElementById('quarterlyBonus').value = formatCurrency(quarterlyBonus);
+            document.getElementById('receipt').value = formatCurrency(receipt);
         }
     </script>
 
