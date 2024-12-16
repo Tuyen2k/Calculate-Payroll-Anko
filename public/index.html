@@ -6,7 +6,7 @@
         content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://ankovietnam.com/wp-content/uploads/2022/10/fa-50x50.png" sizes="32x32" />
+    <link rel="icon" href="/static/favicon.ico" sizes="32x32" />
     <title>Bảng Tính Thu Nhập</title>
     <style>
         body {
@@ -98,7 +98,7 @@
                     <td>2. Lương cơ bản</td>
                     <td>
                         <div class="input-group">
-                            <input  type="string" id="baseSalary" value="6.000.000" readonly>
+                            <input type="string" id="baseSalary" value="6.000.000" readonly>
                             <!-- <input type="number" id="baseSalary" min="0" onchange="calculate()">
                             <div class="note">Nhập số tiền lương cơ bản của bạn</div> -->
                         </div>
@@ -117,7 +117,8 @@
                     <td>4. Doanh số</td>
                     <td>
                         <div class="input-group">
-                            <input type="number" id="revenue" min="0" onchange="calculateAchievement()">
+                            <!-- <input type="number" id="revenue" min="0" onchange="calculateAchievement()"> -->
+                            <input type="number" id="revenue" min="0" >
                             <div class="note">Ví dụ: Nếu doanh số của bạn là 80 triệu, hãy nhập: 80000000</div>
                             <div class="note">
                                 Chỉ tiêu Doanh số thay đổi theo tháng:
@@ -154,7 +155,7 @@
                     <td>
                         <div class="input-group">
                             <input type="number" id="orders" onchange="calculate()" min="0">
-                            <div class="note">Điền số đơn hàng trong tháng bạn bán được</div>
+                            <div class="note">Điền số đơn hàng trong tháng bạn bán được. Bạn sẽ hưởng phụ cấp internet nếu số đơn hàng >= 75</div>
                         </div>
                     </td>
                 </tr>
@@ -163,7 +164,7 @@
                     <td>
                         <div class="input-group">
                             <input type="number" id="quarterlyTarget" min="0" onchange="calculate()">
-                            <div class="note">Bạn sẽ đạt thưởng quý nếu tổng chỉ tiêu 3 tháng đạt &gt;=105% hoặc 115%
+                            <div class="note">Điền phần trăm thực hiện chỉ tiêu quý. Bạn sẽ đạt thưởng quý nếu tổng chỉ tiêu 3 tháng đạt &gt;=105% hoặc 115%
                             </div>
                         </div>
                     </td>
@@ -238,7 +239,22 @@
             }
 
             e.target.value = value;
+
         });
+
+        function getWorkingDays(year, month) {
+            let totalDays = new Date(year, month, 0).getDate(); // Số ngày trong tháng
+            let workingDays = 0;
+
+            for (let day = 1; day <= totalDays; day++) {
+                let date = new Date(year, month - 1, day); // Tháng trong JS bắt đầu từ 0
+                if (date.getDay() !== 0) { // Loại trừ Chủ nhật (0 là Chủ nhật)
+                    workingDays++;
+                }
+            }
+
+            return workingDays;
+        }
 
         function calculateAchievement() {
             const revenue = parseFloat(document.getElementById('revenue').value) || 0;
@@ -253,13 +269,22 @@
         }
 
         function calculate() {
-            const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
+            const baseSalary = parseFloat(document.getElementById('baseSalary').value.replace(/\./g, '')) || 0;
             const workDays = parseFloat(document.getElementById('workDays').value) || 0;
             const revenueAchievement = parseFloat(document.getElementById('revenueAchievement').value) || 0;
             const revenue = parseFloat(document.getElementById('revenue').value) || 0;
             const orders = parseFloat(document.getElementById('orders').value) || 0;
             const kpi = parseFloat(document.getElementById('kpi').value) || 0;
             const quarterlyTarget = parseFloat(document.getElementById('quarterlyTarget').value) || 0;
+            const dayStr = document.getElementById('month').value;
+
+            // tính công chuẩn
+            let congChuan = 0;
+            if(dayStr !== undefined && dayStr !== '' && dayStr !== null){
+                let month = parseInt(dayStr.split('/')[0]);
+                let year = parseInt(dayStr.split('/')[1]);
+                congChuan = getWorkingDays(year, month);
+            }   
 
             let salaryDays;
             if (revenueAchievement >= 100) {
@@ -270,12 +295,14 @@
                 salaryDays = workDays;
             }
 
-            const actualSalary = (baseSalary / 26) * salaryDays;
-            const inflationAllowance = revenue >= 50000000 ? Math.round((500000 / 26) * salaryDays) : 0;
+            congChuan = (congChuan == 0 ? 1 : congChuan);
+
+            const actualSalary = (baseSalary / congChuan) * salaryDays;
+            const inflationAllowance = revenue >= 50000000 ? Math.round((500000 / congChuan) * salaryDays) : 0;
 
             let internetAllowance;
             if (orders >= 75) {
-                internetAllowance = (200000 / 26) * workDays;
+                internetAllowance = (200000 / congChuan) * salaryDays;
             } else {
                 internetAllowance = (orders * 200000) / 75;
             }
