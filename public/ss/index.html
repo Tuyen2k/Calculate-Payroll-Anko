@@ -321,8 +321,8 @@
             // thưởng quý
             let thuongQuy = quarterlyTarget >= 105 ? 3900000 : 0;
 
-            const actualSalary = (baseSalary == 0 || congChuan == 0 || salaryDays == 0) ? 0 : (baseSalary / congChuan) * salaryDays;
-
+            let actualSalary = (baseSalary == 0 || congChuan == 0 || salaryDays == 0) ? 0 : (baseSalary / congChuan) * salaryDays;
+            actualSalary = baseSalary < actualSalary ? baseSalary : actualSalary;
             const totalIncome = actualSalary + mobileSalary + anVaXang + thuongDS + thuongKpi;
 
             let receipt = totalIncome - (15000 + 506625)

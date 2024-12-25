@@ -297,7 +297,8 @@
 
             congChuan = (congChuan == 0 ? 1 : congChuan);
 
-            const actualSalary = (baseSalary / congChuan) * salaryDays;
+            let actualSalary = (baseSalary / congChuan) * salaryDays;
+            actualSalary = baseSalary < actualSalary ? baseSalary : actualSalary;
             const inflationAllowance = revenue >= 50000000 ? Math.round((500000 / congChuan) * salaryDays) : 0;
 
             let internetAllowance;
