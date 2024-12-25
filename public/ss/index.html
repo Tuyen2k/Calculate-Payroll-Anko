@@ -276,14 +276,15 @@
             let salaryDays = workDays;
 
             // phụ cấp điện thoại
-            const mobileSalary = (salaryDays == 0 || congChuan == 0) ? 0 : 200000 * salaryDays / congChuan;
+            let mobileSalary = (salaryDays == 0 || congChuan == 0) ? 0 : 200000 * salaryDays / congChuan;
+            mobileSalary = mobileSalary > 200000 ? 200000 :  Math.round(mobileSalary);
 
             // phụ cấp ăn xăng xe
             let anVaXang = 0;
             if (revenueAchievement >= 60) {
                 anVaXang = 2500000;
             } else {
-                anVaXang = revenueAchievement * 2500000 / 60;
+                anVaXang =  Math.round(revenueAchievement * 2500000 / 60);
             }
 
             // thưởng doanh số
